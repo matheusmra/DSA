@@ -332,8 +332,10 @@ public class Principal {
 
     private static void menuDetalheCursoParaInscricao(Usuario usuario, Curso curso) throws Exception {
         boolean emDetalhe = true;
+        Usuario autor = USUARIO_CONTROLLER.buscarPorId(curso.usuarioId);
+        String nomeAutor = autor != null ? autor.getNome() : "Desconhecido";
         while (emDetalhe) {
-            String opcao = INSCRICOES_VIEW.mostrarDetalheCursoParaInscricao(curso);
+            String opcao = INSCRICOES_VIEW.mostrarDetalheCursoParaInscricao(curso, nomeAutor);
             switch (opcao) {
                 case "A":
                     boolean inscrito = INSCRICAO_CONTROLLER.inscrever(usuario.getId(), curso.getId());
@@ -354,8 +356,10 @@ public class Principal {
 
     private static void menuDetalheCursoInscrito(Usuario usuario, Curso curso) throws Exception {
         boolean emDetalhe = true;
+        Usuario autor = USUARIO_CONTROLLER.buscarPorId(curso.usuarioId);
+        String nomeAutor = autor != null ? autor.getNome() : "Desconhecido";
         while (emDetalhe) {
-            String opcao = INSCRICOES_VIEW.mostrarDetalheCursoInscrito(curso);
+            String opcao = INSCRICOES_VIEW.mostrarDetalheCursoInscrito(curso, nomeAutor);
             switch (opcao) {
                 case "A":
                     if (INSCRICOES_VIEW.confirmarCancelamento()) {

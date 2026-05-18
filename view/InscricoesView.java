@@ -66,13 +66,14 @@ public class InscricoesView {
         return console.nextLine().trim().equalsIgnoreCase("S");
     }
 
-    public String mostrarDetalheCursoParaInscricao(Curso curso) {
+    public String mostrarDetalheCursoParaInscricao(Curso curso, String nomeAutor) {
         System.out.println("\nEntrePares 1.0");
         System.out.println("--------------");
         System.out.println("> Início > Minhas inscrições > " + curso.getNome());
 
         System.out.println("\nCÓDIGO........: " + curso.getCodigoCompartilhavel());
         System.out.println("CURSO.........: " + curso.getNome());
+        System.out.println("AUTOR.........: " + nomeAutor);
         System.out.println("DESCRIÇÃO.....: " + curso.getDescricao());
         System.out.println("DATA DE INÍCIO: " + curso.getDataInicioCurso());
 
@@ -84,13 +85,14 @@ public class InscricoesView {
         return console.nextLine().trim().toUpperCase();
     }
 
-    public String mostrarDetalheCursoInscrito(Curso curso) {
+    public String mostrarDetalheCursoInscrito(Curso curso, String nomeAutor) {
         System.out.println("\nEntrePares 1.0");
         System.out.println("--------------");
         System.out.println("> Início > Minhas inscrições > " + curso.getNome());
 
         System.out.println("\nCÓDIGO........: " + curso.getCodigoCompartilhavel());
         System.out.println("CURSO.........: " + curso.getNome());
+        System.out.println("AUTOR.........: " + nomeAutor);
         System.out.println("DESCRIÇÃO.....: " + curso.getDescricao());
         System.out.println("DATA DE INÍCIO: " + curso.getDataInicioCurso());
 

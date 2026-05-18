@@ -119,23 +119,12 @@ public class InscricaoController {
         }
     }
 
-    // Método privado auxiliar para encontrar o ID do registro CursoUsuario
-    private int buscarIdInscricao(int idUsuario, int idCurso) throws Exception {
-        List<CursoUsuario> todasInscricoes = arqCursoUsuario.readAll();
-        for (CursoUsuario inscricao : todasInscricoes) {
-            if (inscricao.getIdUsuario() == idUsuario && inscricao.getIdCurso() == idCurso) {
-                return inscricao.getId();
-            }
-        }
-        return -1; // Retorna -1 se a inscrição não existir
-    }
-
     // Cancelar (por usuário) - O próprio usuário cancela sua inscrição
     public boolean cancelarPorUsuario(int idUsuario, int idCurso) {
         try {
-            int idInscricao = buscarIdInscricao(idUsuario, idCurso);
-            if (idInscricao != -1) {
-                boolean sucesso = arqCursoUsuario.delete(idInscricao);
+            CursoUsuario inscricao = arqCursoUsuario.buscar(idUsuario, idCurso);
+            if (inscricao != null) {
+                boolean sucesso = arqCursoUsuario.delete(inscricao.getId());
                 if (sucesso) {
                     System.out.println("Inscrição cancelada com sucesso.");
                 }
@@ -160,9 +149,9 @@ public class InscricaoController {
                 return false;
             }
 
-            int idInscricao = buscarIdInscricao(idUsuarioInscrito, idCurso);
-            if (idInscricao != -1) {
-                boolean sucesso = arqCursoUsuario.delete(idInscricao);
+            CursoUsuario inscricao = arqCursoUsuario.buscar(idUsuarioInscrito, idCurso);
+            if (inscricao != null) {
+                boolean sucesso = arqCursoUsuario.delete(inscricao.getId());
                 if (sucesso) {
                     System.out.println("Inscrito removido do curso com sucesso.");
                 }
@@ -180,13 +169,11 @@ public class InscricaoController {
     public List<Curso> listarCursosDoUsuario(int idUsuario) {
         List<Curso> cursosDoUsuario = new ArrayList<>();
         try {
-            List<CursoUsuario> todasInscricoes = arqCursoUsuario.readAll();
-            for (CursoUsuario inscricao : todasInscricoes) {
-                if (inscricao.getIdUsuario() == idUsuario) {
-                    Curso curso = arqCurso.read(inscricao.getIdCurso());
-                    if (curso != null) {
-                        cursosDoUsuario.add(curso);
-                    }
+            List<CursoUsuario> inscricoes = arqCursoUsuario.listarPorUsuario(idUsuario);
+            for (CursoUsuario inscricao : inscricoes) {
+                Curso curso = arqCurso.read(inscricao.getIdCurso());
+                if (curso != null) {
+                    cursosDoUsuario.add(curso);
                 }
             }
         } catch (Exception e) {
@@ -198,13 +185,11 @@ public class InscricaoController {
     public List<Usuario> listarInscritosNoCurso(int idCurso) {
         List<Usuario> usuariosInscritos = new ArrayList<>();
         try {
-            List<CursoUsuario> todasInscricoes = arqCursoUsuario.readAll();
-            for (CursoUsuario inscricao : todasInscricoes) {
-                if (inscricao.getIdCurso() == idCurso) {
-                    Usuario usuario = arqUsuario.read(inscricao.getIdUsuario());
-                    if (usuario != null) {
-                        usuariosInscritos.add(usuario);
-                    }
+            List<CursoUsuario> inscricoes = arqCursoUsuario.listarPorCurso(idCurso);
+            for (CursoUsuario inscricao : inscricoes) {
+                Usuario usuario = arqUsuario.read(inscricao.getIdUsuario());
+                if (usuario != null) {
+                    usuariosInscritos.add(usuario);
                 }
             }
         } catch (Exception e) {
@@ -216,13 +201,11 @@ public class InscricaoController {
     public List<InscritoDados> listarInscritosComDados(int idCurso) {
         List<InscritoDados> inscritos = new ArrayList<>();
         try {
-            List<CursoUsuario> todasInscricoes = arqCursoUsuario.readAll();
-            for (CursoUsuario inscricao : todasInscricoes) {
-                if (inscricao.getIdCurso() == idCurso) {
-                    Usuario usuario = arqUsuario.read(inscricao.getIdUsuario());
-                    if (usuario != null) {
-                        inscritos.add(new InscritoDados(usuario, inscricao.getDataInscricao(), inscricao.getId()));
-                    }
+            List<CursoUsuario> inscricoes = arqCursoUsuario.listarPorCurso(idCurso);
+            for (CursoUsuario inscricao : inscricoes) {
+                Usuario usuario = arqUsuario.read(inscricao.getIdUsuario());
+                if (usuario != null) {
+                    inscritos.add(new InscritoDados(usuario, inscricao.getDataInscricao(), inscricao.getId()));
                 }
             }
         } catch (Exception e) {

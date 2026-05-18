@@ -26,6 +26,14 @@ public class UsuarioController {
         return this.repository.buscarPorEmail(email);
     }
 
+    public Usuario buscarPorId(int id) {
+        try {
+            return this.repository.read(id);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public boolean login(String email, String senha){
         Usuario usuario = this.repository.buscarPorEmail(email);
         if (usuario == null) {
