@@ -233,6 +233,44 @@ public class Principal {
         }
     }
 
+    private static void menuListaTodosCursos(Usuario usuario) throws Exception {
+        List<Curso> todosCursos = CURSO_CONTROLLER.listarTodos();
+        if (todosCursos == null || todosCursos.isEmpty()) {
+            INSCRICOES_VIEW.mostrarMensagem("Nenhum curso disponível.");
+            return;
+        }
+
+        INSCRICOES_VIEW.resetarPaginacao();
+        boolean emLista = true;
+        while (emLista) {
+            String opcao = INSCRICOES_VIEW.lerOpcaoMenuListaTodosCursos(todosCursos);
+
+            switch (opcao) {
+                case "A":
+                    INSCRICOES_VIEW.irAnterior();
+                    break;
+                case "B":
+                    INSCRICOES_VIEW.irProxima();
+                    break;
+                case "R":
+                    emLista = false;
+                    INSCRICOES_VIEW.resetarPaginacao();
+                    break;
+                default:
+                    // Verifica se é um número válido (0-9) e se o curso existe
+                    if (INSCRICOES_VIEW.opcaoValida(opcao)) {
+                        Curso curso = INSCRICOES_VIEW.obterCursoSelecionado(opcao);
+                        if (curso != null) {
+                            menuDetalheCursoParaInscricao(usuario, curso);
+                        }
+                    } else {
+                        INSCRICOES_VIEW.mostrarMensagem("Opção inválida.");
+                    }
+                    break;
+            }
+        }
+    }
+
     private static void menuBuscarCursoPorCodigo(Usuario usuario) throws Exception {
         String codigo = INSCRICOES_VIEW.lerCodigo();
         if (codigo.isEmpty()) {
@@ -246,6 +284,10 @@ public class Principal {
             return;
         }
 
+        menuDetalheCursoParaInscricao(usuario, curso);
+    }
+
+    private static void menuDetalheCursoParaInscricao(Usuario usuario, Curso curso) throws Exception {
         boolean emDetalhe = true;
         while (emDetalhe) {
             String opcao = INSCRICOES_VIEW.mostrarDetalheCursoParaInscricao(curso);
@@ -357,8 +399,7 @@ public class Principal {
                     // Lógica futura: ler palavras-chave, buscar no CursoController
                     break;
                 case "C":
-                    INSCRICOES_VIEW.mostrarMensagem("Listagem de todos os cursos em desenvolvimento.");
-                    // Lógica futura: listar todos usando CursoController
+                    menuListaTodosCursos(usuario);
                     break;
                 case "R":
                     emInscricoes = false; // Retorna ao menu anterior

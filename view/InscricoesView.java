@@ -7,6 +7,9 @@ import model.Curso;
 public class InscricoesView {
 
     private final Scanner console;
+    private int paginaAtual = 1;
+    private int totalPaginas = 1;
+    private List<Curso> todosCursos;
 
     public InscricoesView(Scanner console) {
         this.console = console;
@@ -69,5 +72,90 @@ public class InscricoesView {
         System.out.print("\nOpção: ");
 
         return console.nextLine().trim().toUpperCase();
+    }
+
+    // Exibe a lista de todos os cursos com paginação (10 itens por página)
+    public String lerOpcaoMenuListaTodosCursos(List<Curso> cursos) {
+        this.todosCursos = cursos;
+        this.totalPaginas = (cursos.size() + 9) / 10; // Arredonda para cima
+        if (this.totalPaginas == 0) this.totalPaginas = 1;
+
+        System.out.println("\nEntrePares 1.0");
+        System.out.println("--------------");
+        System.out.println("> Início > Minhas inscrições > Lista de cursos\n");
+        System.out.printf("Página %d de %d\n\n", paginaAtual, totalPaginas);
+
+        // Calcula os índices de início e fim da página
+        int inicio = (paginaAtual - 1) * 10;
+        int fim = Math.min(inicio + 10, cursos.size());
+
+        // Exibe os cursos da página atual
+        for (int i = inicio; i < fim; i++) {
+            Curso c = cursos.get(i);
+            int indiceExibicao = (i - inicio + 1) % 10; // 1-9 e 0 para o 10º item
+            System.out.printf("(%d) %s - %s\n", indiceExibicao, c.getNome(), c.getDataInicioCurso());
+        }
+
+        System.out.println();
+
+        // Opções de navegação
+        if (paginaAtual > 1) {
+            System.out.println("(A) Página anterior");
+        }
+        if (paginaAtual < totalPaginas) {
+            System.out.println("(B) Próxima página");
+        }
+
+        System.out.println("\n(R) Retornar ao menu anterior");
+        System.out.print("\nOpção: ");
+
+        return console.nextLine().trim().toUpperCase();
+    }
+
+    // Retorna o curso selecionado pela opção (1-9 e 0 para o 10º)
+    public Curso obterCursoSelecionado(String opcao) {
+        try {
+            int indice = Integer.parseInt(opcao);
+            int posicaoGlobal = (paginaAtual - 1) * 10 + (indice == 0 ? 9 : indice - 1);
+            
+            if (posicaoGlobal >= 0 && posicaoGlobal < todosCursos.size()) {
+                return todosCursos.get(posicaoGlobal);
+            }
+        } catch (NumberFormatException e) {
+            // Ignorado
+        }
+        return null;
+    }
+
+    // Valida se a opção de seleção é válida
+    public boolean opcaoValida(String opcao) {
+        try {
+            int indice = Integer.parseInt(opcao);
+            if (indice < 0 || indice > 9) return false;
+            
+            int posicaoGlobal = (paginaAtual - 1) * 10 + (indice == 0 ? 9 : indice - 1);
+            return posicaoGlobal < todosCursos.size();
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    // Avança para a próxima página
+    public void irProxima() {
+        if (paginaAtual < totalPaginas) {
+            paginaAtual++;
+        }
+    }
+
+    // Volta para a página anterior
+    public void irAnterior() {
+        if (paginaAtual > 1) {
+            paginaAtual--;
+        }
+    }
+
+    // Reseta a paginação para a primeira página
+    public void resetarPaginacao() {
+        paginaAtual = 1;
     }
 }
