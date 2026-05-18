@@ -184,7 +184,7 @@ public class Principal {
             String opcao = CURSO_DETALHE_VIEW.mostrarMenuCurso(curso);
             switch (opcao) {
                 case "A":
-                    CURSO_DETALHE_VIEW.mostrarMensagem("Gerenciar inscritos em desenvolvimento.");
+                    menuGerenciarInscritos(curso);
                     break;
                 case "B":
                     CursoDetalheView.DadosAtualizados novos = CURSO_DETALHE_VIEW.lerDadosAtualizados(curso);
@@ -233,8 +233,89 @@ public class Principal {
         }
     }
 
+    private static void menuGerenciarInscritos(Curso curso) throws Exception {
+        boolean emGestao = true;
+        while (emGestao) {
+            List<InscricaoController.InscritoDados> inscritos = INSCRICAO_CONTROLLER.listarInscritosComDados(curso.getId());
+            String opcao = CURSOS_VIEW.lerOpcaoListaInscritos(curso, inscritos);
+
+            if (opcao.equals("R")) {
+                emGestao = false;
+            } else if (opcao.equals("A")) {
+                String nomeArquivo = CURSOS_VIEW.lerNomeArquivoExportacao();
+                CURSOS_VIEW.exportarListaParaCSV(inscritos, nomeArquivo);
+            } else if (opcao.matches("\\d+")) {
+                int idx = Integer.parseInt(opcao) - 1;
+                if (idx >= 0 && idx < inscritos.size()) {
+                    menuDetalheInscrito(curso, inscritos.get(idx));
+                }
+            }
+        }
+    }
+
+    private static void menuDetalheInscrito(Curso curso, InscricaoController.InscritoDados inscrito) throws Exception {
+        boolean emDetalhe = true;
+        while (emDetalhe) {
+            String opcao = CURSOS_VIEW.mostrarDetalheInscrito(inscrito.usuario, inscrito.dataInscricao);
+            switch (opcao) {
+                case "A":
+                    if (CURSO_DETALHE_VIEW.confirmarAcao("Cancelar inscrição de " + inscrito.usuario.getNome())) {
+                        boolean sucesso = INSCRICAO_CONTROLLER.cancelarPorProponente(curso.usuarioId, inscrito.usuario.getId(), curso.getId());
+                        if (sucesso) {
+                            CURSO_DETALHE_VIEW.mostrarMensagem("Inscrição cancelada com sucesso.");
+                            emDetalhe = false;
+                        }
+                    }
+                    break;
+                case "R":
+                    emDetalhe = false;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private static void menuListaTodosCursos(Usuario usuario) throws Exception {
+        List<Curso> todosCursos = CURSO_CONTROLLER.listarTodos();
+        if (todosCursos == null || todosCursos.isEmpty()) {
+            INSCRICOES_VIEW.mostrarMensagem("Nenhum curso disponível.");
+            return;
+        }
+
+        INSCRICOES_VIEW.resetarPaginacao();
+        boolean emLista = true;
+        while (emLista) {
+            String opcao = INSCRICOES_VIEW.lerOpcaoMenuListaTodosCursos(todosCursos);
+
+            switch (opcao) {
+                case "A":
+                    INSCRICOES_VIEW.irAnterior();
+                    break;
+                case "B":
+                    INSCRICOES_VIEW.irProxima();
+                    break;
+                case "R":
+                    emLista = false;
+                    INSCRICOES_VIEW.resetarPaginacao();
+                    break;
+                default:
+                    // Verifica se é um número válido (0-9) e se o curso existe
+                    if (INSCRICOES_VIEW.opcaoValida(opcao)) {
+                        Curso curso = INSCRICOES_VIEW.obterCursoSelecionado(opcao);
+                        if (curso != null) {
+                            menuDetalheCursoParaInscricao(usuario, curso);
+                        }
+                    } else {
+                        INSCRICOES_VIEW.mostrarMensagem("Opção inválida.");
+                    }
+                    break;
+            }
+        }
+    }
+
     private static void menuBuscarCursoPorCodigo(Usuario usuario) throws Exception {
-        String codigo = INSCRICOES_VIEW.lerCodigo();
+        String codigo = INSCRICOES_VIEW.lerCodigoCurso();
         if (codigo.isEmpty()) {
             INSCRICOES_VIEW.mostrarMensagem("Código não informado.");
             return;
@@ -246,9 +327,15 @@ public class Principal {
             return;
         }
 
+        menuDetalheCursoParaInscricao(usuario, curso);
+    }
+
+    private static void menuDetalheCursoParaInscricao(Usuario usuario, Curso curso) throws Exception {
         boolean emDetalhe = true;
+        Usuario autor = USUARIO_CONTROLLER.buscarPorId(curso.usuarioId);
+        String nomeAutor = autor != null ? autor.getNome() : "Desconhecido";
         while (emDetalhe) {
-            String opcao = INSCRICOES_VIEW.mostrarDetalheCursoParaInscricao(curso);
+            String opcao = INSCRICOES_VIEW.mostrarDetalheCursoParaInscricao(curso, nomeAutor);
             switch (opcao) {
                 case "A":
                     boolean inscrito = INSCRICAO_CONTROLLER.inscrever(usuario.getId(), curso.getId());
@@ -256,6 +343,32 @@ public class Principal {
                         ? "Inscrição realizada com sucesso!"
                         : "Não foi possível realizar a inscrição.");
                     if (inscrito) emDetalhe = false;
+                    break;
+                case "R":
+                    emDetalhe = false;
+                    break;
+                default:
+                    INSCRICOES_VIEW.mostrarMensagem("Opção inválida.");
+                    break;
+            }
+        }
+    }
+
+    private static void menuDetalheCursoInscrito(Usuario usuario, Curso curso) throws Exception {
+        boolean emDetalhe = true;
+        Usuario autor = USUARIO_CONTROLLER.buscarPorId(curso.usuarioId);
+        String nomeAutor = autor != null ? autor.getNome() : "Desconhecido";
+        while (emDetalhe) {
+            String opcao = INSCRICOES_VIEW.mostrarDetalheCursoInscrito(curso, nomeAutor);
+            switch (opcao) {
+                case "A":
+                    if (INSCRICOES_VIEW.confirmarCancelamento()) {
+                        boolean cancelado = INSCRICAO_CONTROLLER.cancelarPorUsuario(usuario.getId(), curso.getId());
+                        INSCRICOES_VIEW.mostrarMensagem(cancelado
+                            ? "Inscrição cancelada com sucesso!"
+                            : "Não foi possível cancelar a inscrição.");
+                        if (cancelado) emDetalhe = false;
+                    }
                     break;
                 case "R":
                     emDetalhe = false;
@@ -353,12 +466,10 @@ public class Principal {
                     menuBuscarCursoPorCodigo(usuario);
                     break;
                 case "B":
-                    INSCRICOES_VIEW.mostrarMensagem("Busca de curso por palavras-chave em desenvolvimento.");
-                    // Lógica futura: ler palavras-chave, buscar no CursoController
+                    INSCRICOES_VIEW.mostrarMensagem("Busca de curso por palavras-chave disponível no TP3.");
                     break;
                 case "C":
-                    INSCRICOES_VIEW.mostrarMensagem("Listagem de todos os cursos em desenvolvimento.");
-                    // Lógica futura: listar todos usando CursoController
+                    menuListaTodosCursos(usuario);
                     break;
                 case "R":
                     emInscricoes = false; // Retorna ao menu anterior
@@ -368,8 +479,7 @@ public class Principal {
                     if (opcao.matches("\\d+")) {
                         int idx = Integer.parseInt(opcao) - 1;
                         if (meusCursos != null && idx >= 0 && idx < meusCursos.size()) {
-                            INSCRICOES_VIEW.mostrarMensagem("Acessando detalhes da inscrição no curso: " + meusCursos.get(idx).getNome() + " (Em desenvolvimento)");
-                            // Lógica futura: Menu de detalhe da inscrição (ex: opção de cancelar a inscrição)
+                            menuDetalheCursoInscrito(usuario, meusCursos.get(idx));
                         } else {
                             INSCRICOES_VIEW.mostrarMensagem("Opcao invalida.");
                         }
