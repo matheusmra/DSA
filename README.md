@@ -273,10 +273,7 @@ Sim. As seguintes regras de integridade referencial são aplicadas em todas as o
 
 **O trabalho compila corretamente?**
 
-Sim. O projeto compila sem erros com o comando:
-```
-javac -encoding UTF-8 -cp . model\*.java repository\*.java repository\Curso\*.java repository\Inscricao\*.java repository\Usuario\*.java controller\*.java view\*.java Principal.java
-```
+Sim. 
 
 **O trabalho está completo e funcionando sem erros de execução?**
 
