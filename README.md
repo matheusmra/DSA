@@ -112,35 +112,37 @@ Tela Inicial
 
 ### Gerenciar inscritos no curso
 
-<!-- PRINT: tela "> Início > Meus cursos > [nome] > Inscrições" com a lista de inscritos e opção (A) Exportar lista -->
+<img width="742" height="388" alt="{3EC37E3F-384C-46A2-87B7-2F61F64FC111}" src="https://github.com/user-attachments/assets/686c71d7-0a88-4b5b-9301-edb681273c31" />
+
 
 ### Detalhe de um inscrito
 
-<!-- PRINT: tela com nome, e-mail, data de inscrição e opção (A) Cancelar inscrição -->
+<img width="530" height="458" alt="{9014407A-2E82-43A9-BFD8-2220AED5B129}" src="https://github.com/user-attachments/assets/6584e12a-7f6d-4443-9bd7-eaf1b47dcb3c" />
+
 
 ### Exportação para CSV
 
-<!-- PRINT: digitando o nome do arquivo e a mensagem "Arquivo exportado com sucesso: xxx.csv" -->
+<img width="741" height="484" alt="{93A4F7A2-C64C-40BA-883B-6E956A5EB7FB}" src="https://github.com/user-attachments/assets/1250a7f1-f172-4672-8e1a-4c80c4d29cd2" />
+
 
 ### Menu Minhas Inscrições
 
-<!-- PRINT: tela "> Início > Minhas inscrições" com a lista de cursos inscritos e opções (A)(B)(C)(R) -->
+<img width="582" height="517" alt="{02E04220-ABA4-4630-AFEF-C6DFD7BC2473}" src="https://github.com/user-attachments/assets/37d39873-286a-413f-9058-f1ab5bfee1d7" />
+
 
 ### Busca de curso por código NanoID
 
-<!-- PRINT: digitando o código e o resultado da busca -->
+<img width="723" height="585" alt="{9C8A96B0-EDF6-4B74-BBAA-1E1DEF7D8855}" src="https://github.com/user-attachments/assets/e9d6414e-0f45-41c7-8c5f-6618b4f281d2" />
 
-### Detalhe do curso para inscrição
-
-<!-- PRINT: tela com CÓDIGO, CURSO, AUTOR, DESCRIÇÃO, DATA DE INÍCIO e opção (A) Fazer minha inscrição -->
 
 ### Listagem paginada de todos os cursos
 
-<!-- PRINT: tela "Página X de Y" com os cursos numerados de (1) a (0) e opções de navegação -->
+<img width="747" height="712" alt="{96E0AECA-BE66-480D-A2B4-1A15E6FA1608}" src="https://github.com/user-attachments/assets/f8bcd954-3c32-41d4-b52f-da4e59d1fb9d" />
+
 
 ### Detalhe do curso inscrito — cancelamento
 
-<!-- PRINT: tela "> Início > Minhas inscrições > [nome do curso]" com opção (A) Cancelar minha inscrição -->
+<img width="890" height="619" alt="{61B2E350-9BDD-49BB-9F87-7E6B99136ED0}" src="https://github.com/user-attachments/assets/667057da-bc06-480c-95f2-3d1622c98487" />
 
 ---
 
