@@ -94,4 +94,14 @@ public class CursoController {
             System.out.println("Erro ao excluir cursos inativos");
         }
     }
+
+    // ✅ LISTAR TODOS OS CURSOS (COM ORDENAÇÃO POR DATA)
+    public List<Curso> listarTodos() {
+        try {
+            return repository.listarTodos();
+        } catch (Exception e) {
+            System.out.println("Erro ao listar todos os cursos");
+            return null;
+        }
+    }
 }

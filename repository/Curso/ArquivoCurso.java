@@ -97,4 +97,20 @@ public class ArquivoCurso extends Arquivo<Curso> {
                 delete(c.getId());
         }
     }
+
+    // Lista todos os cursos não excluídos, ordenados por data de início
+    public List<Curso> listarTodos() throws Exception {
+        List<Curso> listaFinal = super.readAll();
+        listaFinal.sort((a, b) -> {
+            // Converte data no formato DD/MM/YYYY para YYYYMMDD para comparação numérica
+            String[] partsA = a.getDataInicioCurso().split("/");
+            String[] partsB = b.getDataInicioCurso().split("/");
+            
+            String dataA = partsA[2] + partsA[1] + partsA[0]; // YYYYMMDD
+            String dataB = partsB[2] + partsB[1] + partsB[0]; // YYYYMMDD
+            
+            return dataA.compareTo(dataB);
+        });
+        return listaFinal;
+    }
 }
