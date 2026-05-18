@@ -12,6 +12,19 @@ import repository.Inscricao.ArquivoCursoUsuario;
 import repository.Usuario.ArquivoUsuario;
 
 public class InscricaoController {
+
+    // Classe auxiliar para retornar dados de inscritos com data
+    public static class InscritoDados {
+        public Usuario usuario;
+        public String dataInscricao;
+        public int idInscricao;
+
+        public InscritoDados(Usuario usuario, String dataInscricao, int idInscricao) {
+            this.usuario = usuario;
+            this.dataInscricao = dataInscricao;
+            this.idInscricao = idInscricao;
+        }
+    }
     
     private final ArquivoCursoUsuario arqCursoUsuario;
     private final ArquivoCurso arqCurso;
@@ -162,5 +175,23 @@ public class InscricaoController {
             System.err.println("Erro ao listar os inscritos no curso: " + e.getMessage());
         }
         return usuariosInscritos;
+    }
+
+    public List<InscritoDados> listarInscritosComDados(int idCurso) {
+        List<InscritoDados> inscritos = new ArrayList<>();
+        try {
+            List<CursoUsuario> todasInscricoes = arqCursoUsuario.readAll();
+            for (CursoUsuario inscricao : todasInscricoes) {
+                if (inscricao.getIdCurso() == idCurso) {
+                    Usuario usuario = arqUsuario.read(inscricao.getIdUsuario());
+                    if (usuario != null) {
+                        inscritos.add(new InscritoDados(usuario, inscricao.getDataInscricao(), inscricao.getId()));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao listar os inscritos no curso: " + e.getMessage());
+        }
+        return inscritos;
     }
 }

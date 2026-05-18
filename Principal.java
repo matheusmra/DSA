@@ -184,7 +184,7 @@ public class Principal {
             String opcao = CURSO_DETALHE_VIEW.mostrarMenuCurso(curso);
             switch (opcao) {
                 case "A":
-                    CURSO_DETALHE_VIEW.mostrarMensagem("Gerenciar inscritos em desenvolvimento.");
+                    menuGerenciarInscritos(curso);
                     break;
                 case "B":
                     CursoDetalheView.DadosAtualizados novos = CURSO_DETALHE_VIEW.lerDadosAtualizados(curso);
@@ -221,6 +221,49 @@ public class Principal {
                             curso.setEstado(3);
                             CURSO_CONTROLLER.atualizar(curso);
                             CURSO_DETALHE_VIEW.mostrarMensagem("Curso cancelado.");
+                        }
+                    }
+                    break;
+                case "R":
+                    emDetalhe = false;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private static void menuGerenciarInscritos(Curso curso) throws Exception {
+        boolean emGestao = true;
+        while (emGestao) {
+            List<InscricaoController.InscritoDados> inscritos = INSCRICAO_CONTROLLER.listarInscritosComDados(curso.getId());
+            String opcao = CURSOS_VIEW.lerOpcaoListaInscritos(curso, inscritos);
+
+            if (opcao.equals("R")) {
+                emGestao = false;
+            } else if (opcao.equals("A")) {
+                String nomeArquivo = CURSOS_VIEW.lerNomeArquivoExportacao();
+                CURSOS_VIEW.exportarListaParaCSV(inscritos, nomeArquivo);
+            } else if (opcao.matches("\\d+")) {
+                int idx = Integer.parseInt(opcao) - 1;
+                if (idx >= 0 && idx < inscritos.size()) {
+                    menuDetalheInscrito(curso, inscritos.get(idx));
+                }
+            }
+        }
+    }
+
+    private static void menuDetalheInscrito(Curso curso, InscricaoController.InscritoDados inscrito) throws Exception {
+        boolean emDetalhe = true;
+        while (emDetalhe) {
+            String opcao = CURSOS_VIEW.mostrarDetalheInscrito(inscrito.usuario, inscrito.dataInscricao);
+            switch (opcao) {
+                case "A":
+                    if (CURSO_DETALHE_VIEW.confirmarAcao("Cancelar inscrição de " + inscrito.usuario.getNome())) {
+                        boolean sucesso = INSCRICAO_CONTROLLER.cancelarPorProponente(curso.usuarioId, inscrito.usuario.getId(), curso.getId());
+                        if (sucesso) {
+                            CURSO_DETALHE_VIEW.mostrarMensagem("Inscrição cancelada com sucesso.");
+                            emDetalhe = false;
                         }
                     }
                     break;
