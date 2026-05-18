@@ -272,7 +272,7 @@ public class Principal {
     }
 
     private static void menuBuscarCursoPorCodigo(Usuario usuario) throws Exception {
-        String codigo = INSCRICOES_VIEW.lerCodigo();
+        String codigo = INSCRICOES_VIEW.lerCodigoCurso();
         if (codigo.isEmpty()) {
             INSCRICOES_VIEW.mostrarMensagem("Código não informado.");
             return;
@@ -298,6 +298,30 @@ public class Principal {
                         ? "Inscrição realizada com sucesso!"
                         : "Não foi possível realizar a inscrição.");
                     if (inscrito) emDetalhe = false;
+                    break;
+                case "R":
+                    emDetalhe = false;
+                    break;
+                default:
+                    INSCRICOES_VIEW.mostrarMensagem("Opção inválida.");
+                    break;
+            }
+        }
+    }
+
+    private static void menuDetalheCursoInscrito(Usuario usuario, Curso curso) throws Exception {
+        boolean emDetalhe = true;
+        while (emDetalhe) {
+            String opcao = INSCRICOES_VIEW.mostrarDetalheCursoInscrito(curso);
+            switch (opcao) {
+                case "A":
+                    if (INSCRICOES_VIEW.confirmarCancelamento()) {
+                        boolean cancelado = INSCRICAO_CONTROLLER.cancelarPorUsuario(usuario.getId(), curso.getId());
+                        INSCRICOES_VIEW.mostrarMensagem(cancelado
+                            ? "Inscrição cancelada com sucesso!"
+                            : "Não foi possível cancelar a inscrição.");
+                        if (cancelado) emDetalhe = false;
+                    }
                     break;
                 case "R":
                     emDetalhe = false;
@@ -395,8 +419,7 @@ public class Principal {
                     menuBuscarCursoPorCodigo(usuario);
                     break;
                 case "B":
-                    INSCRICOES_VIEW.mostrarMensagem("Busca de curso por palavras-chave em desenvolvimento.");
-                    // Lógica futura: ler palavras-chave, buscar no CursoController
+                    INSCRICOES_VIEW.mostrarMensagem("Busca de curso por palavras-chave disponível no TP3.");
                     break;
                 case "C":
                     menuListaTodosCursos(usuario);
@@ -409,8 +432,7 @@ public class Principal {
                     if (opcao.matches("\\d+")) {
                         int idx = Integer.parseInt(opcao) - 1;
                         if (meusCursos != null && idx >= 0 && idx < meusCursos.size()) {
-                            INSCRICOES_VIEW.mostrarMensagem("Acessando detalhes da inscrição no curso: " + meusCursos.get(idx).getNome() + " (Em desenvolvimento)");
-                            // Lógica futura: Menu de detalhe da inscrição (ex: opção de cancelar a inscrição)
+                            menuDetalheCursoInscrito(usuario, meusCursos.get(idx));
                         } else {
                             INSCRICOES_VIEW.mostrarMensagem("Opcao invalida.");
                         }
