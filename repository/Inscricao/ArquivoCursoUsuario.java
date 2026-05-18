@@ -120,4 +120,40 @@ public class ArquivoCursoUsuario extends Arquivo<CursoUsuario> {
         }
         return resultado;
     }
+
+    /**
+     * Remove TODAS as inscrições associadas a um usuário.
+     * Utilizado quando um usuário é deletado do sistema.
+     * @param idUsuario ID do usuário cujas inscrições serão removidas
+     * @return Número de inscrições removidas
+     * @throws Exception
+     */
+    public int deletarTodasInscricoesUsuario(int idUsuario) throws Exception {
+        List<CursoUsuario> inscricoes = listarPorUsuario(idUsuario);
+        int removidas = 0;
+        for (CursoUsuario cu : inscricoes) {
+            if (delete(cu.getId())) {
+                removidas++;
+            }
+        }
+        return removidas;
+    }
+
+    /**
+     * Remove TODAS as inscrições associadas a um curso.
+     * Utilizado quando um curso é deletado ou cancelado.
+     * @param idCurso ID do curso cujas inscrições serão removidas
+     * @return Número de inscrições removidas
+     * @throws Exception
+     */
+    public int deletarTodasInscricoesCurso(int idCurso) throws Exception {
+        List<CursoUsuario> inscricoes = listarPorCurso(idCurso);
+        int removidas = 0;
+        for (CursoUsuario cu : inscricoes) {
+            if (delete(cu.getId())) {
+                removidas++;
+            }
+        }
+        return removidas;
+    }
 }

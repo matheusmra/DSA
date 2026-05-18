@@ -25,6 +25,12 @@ public class InscricaoController {
             this.idInscricao = idInscricao;
         }
     }
+
+    // Estados do curso
+    private static final int ESTADO_ABERTO = 0;        // Inscrições abertas
+    private static final int ESTADO_EM_ANDAMENTO = 1; // Curso em andamento
+    private static final int ESTADO_FINALIZADO = 2;    // Curso finalizado
+    private static final int ESTADO_CANCELADO = 3;     // Curso cancelado
     
     private final ArquivoCursoUsuario arqCursoUsuario;
     private final ArquivoCurso arqCurso;
@@ -42,43 +48,73 @@ public class InscricaoController {
         arqUsuario.close();
     }
 
+    /**
+     * Realiza inscrição com validações de integridade referencial.
+     * 
+     * REGRAS APLICADAS:
+     * 1. Usuário deve existir
+     * 2. Curso deve existir
+     * 3. Curso deve estar com estado ABERTO (0)
+     * 4. Usuário NÃO pode se inscrever em curso de sua própria autoria
+     * 5. Usuário NÃO pode estar já inscrito no curso
+     * 
+     * @param idUsuario ID do usuário tentando se inscrever
+     * @param idCurso ID do curso
+     * @return true se inscrito com sucesso, false caso contrário
+     */
     public boolean inscrever(int idUsuario, int idCurso) {
         try {
-            // 0. Validar se o usuário existe
+            // VALIDAÇÃO 1: Usuário deve existir
             Usuario usuario = arqUsuario.read(idUsuario);
             if (usuario == null) {
-                System.out.println("Aviso: O usuário selecionado não existe.");
+                System.err.println("✗ Erro: Usuário ID " + idUsuario + " não existe no sistema.");
                 return false;
             }
 
-            // 1. Validar se o curso existe e está com inscrições abertas
+            // VALIDAÇÃO 2: Curso deve existir
             Curso curso = arqCurso.read(idCurso);
-            
-            // Assumindo que estado '0' significa 'Aberto/Ativo'. Ajuste conforme sua lógica.
-            if (curso == null || curso.getEstado() != 0) { 
-                System.out.println("Aviso: O curso selecionado não existe ou as inscrições estão encerradas.");
+            if (curso == null) {
+                System.err.println("✗ Erro: Curso ID " + idCurso + " não existe no sistema.");
                 return false;
             }
 
-            // 2. Rejeitar duplicatas
-            List<CursoUsuario> todasInscricoes = arqCursoUsuario.readAll(); // Assumindo um método que lista todos
-            for (CursoUsuario inscricao : todasInscricoes) {
-                if (inscricao.getIdUsuario() == idUsuario && inscricao.getIdCurso() == idCurso) {
-                    System.out.println("Aviso: Você já está inscrito neste curso!");
-                    return false;
-                }
+            // VALIDAÇÃO 3: Curso deve estar em estado ABERTO para inscrições
+            if (curso.getEstado() != ESTADO_ABERTO) {
+                String estadoDescricao = descreverEstado(curso.getEstado());
+                System.err.println("✗ Erro: Inscrições para este curso estão encerradas (estado: " + estadoDescricao + ").");
+                return false;
             }
 
-            // 3. Efetivar a inscrição
+            // VALIDAÇÃO 4: Usuário NÃO pode se inscrever em curso de sua própria autoria
+            // DECISÃO: BLOQUEADO (proprietário não pode ser inscrito em seus próprios cursos)
+            if (curso.usuarioId == idUsuario) {
+                System.err.println("✗ Erro: Você não pode se inscrever em seu próprio curso.");
+                return false;
+            }
+
+            // VALIDAÇÃO 5: Rejeitar duplicatas - usar método específico de busca
+            CursoUsuario inscricaoExistente = arqCursoUsuario.buscar(idUsuario, idCurso);
+            if (inscricaoExistente != null) {
+                System.err.println("✗ Erro: Você já está inscrito neste curso.");
+                return false;
+            }
+
+            // ✓ TODAS AS VALIDAÇÕES PASSARAM - Efetuar inscrição
             String dataAtual = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             CursoUsuario novaInscricao = new CursoUsuario(idCurso, idUsuario, dataAtual);
-            arqCursoUsuario.create(novaInscricao);
+            int idInscricao = arqCursoUsuario.create(novaInscricao);
 
-            System.out.println("Sucesso: Inscrição confirmada!");
-            return true;
+            if (idInscricao != -1) {
+                System.out.println("✓ Sucesso: Inscrição confirmada! (ID: " + idInscricao + ")");
+                return true;
+            } else {
+                System.err.println("✗ Erro: Falha ao registrar inscrição no banco de dados.");
+                return false;
+            }
 
         } catch (Exception e) {
-            System.err.println("Erro ao tentar realizar a inscrição: " + e.getMessage());
+            System.err.println("✗ Erro ao tentar realizar a inscrição: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
@@ -193,5 +229,20 @@ public class InscricaoController {
             System.err.println("Erro ao listar os inscritos no curso: " + e.getMessage());
         }
         return inscritos;
+    }
+
+    /**
+     * Método auxiliar para descrever o estado de um curso de forma legível.
+     * @param estado Código numérico do estado
+     * @return Descrição legível do estado
+     */
+    private String descreverEstado(int estado) {
+        switch (estado) {
+            case ESTADO_ABERTO: return "ABERTO";
+            case ESTADO_EM_ANDAMENTO: return "EM ANDAMENTO";
+            case ESTADO_FINALIZADO: return "FINALIZADO";
+            case ESTADO_CANCELADO: return "CANCELADO";
+            default: return "DESCONHECIDO";
+        }
     }
 }
