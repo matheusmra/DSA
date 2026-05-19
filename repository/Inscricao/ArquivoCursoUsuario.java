@@ -156,4 +156,11 @@ public class ArquivoCursoUsuario extends Arquivo<CursoUsuario> {
         }
         return removidas;
     }
+
+    @Override
+    public void close() throws Exception {
+        indiceCursoUsuario.close();
+        indiceUsuarioCurso.close();
+        super.close();
+    }
 }

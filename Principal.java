@@ -36,33 +36,25 @@ public class Principal {
             System.out.println("Erro ao iniciar o sistema.");
             e.printStackTrace();
         } finally {
-            if (USUARIO_CONTROLLER != null) {
-                try {
-                    USUARIO_CONTROLLER.close();
-                } catch (Exception e) {
-                    System.out.println("Erro ao encerrar recursos do sistema.");
-                    e.printStackTrace();
-                }
-            }
-            if (CURSO_CONTROLLER != null) {
-                try {
-                    CURSO_CONTROLLER.close();
-                } catch (Exception e) {
-                    System.out.println("Erro ao encerrar recursos de cursos.");
-                    e.printStackTrace();
-                }
-            }
             encerrarRecursos();
         }
     }
 
     private static void encerrarRecursos() {
         try {
-            if (USUARIO_CONTROLLER != null) USUARIO_CONTROLLER.close();
-            if (CURSO_CONTROLLER != null) CURSO_CONTROLLER.close();
-            if (INSCRICAO_CONTROLLER != null) INSCRICAO_CONTROLLER.close(); // Adicionado
+            if (INSCRICAO_CONTROLLER != null) INSCRICAO_CONTROLLER.close();
         } catch (Exception e) {
-            System.out.println("Erro ao encerrar recursos do sistema.");
+            System.out.println("Erro ao encerrar recursos de inscricoes.");
+        }
+        try {
+            if (CURSO_CONTROLLER != null) CURSO_CONTROLLER.close();
+        } catch (Exception e) {
+            System.out.println("Erro ao encerrar recursos de cursos.");
+        }
+        try {
+            if (USUARIO_CONTROLLER != null) USUARIO_CONTROLLER.close();
+        } catch (Exception e) {
+            System.out.println("Erro ao encerrar recursos de usuarios.");
         }
     }
 

@@ -842,4 +842,8 @@ public class ArvoreBMais<T extends RegistroArvoreBMais<T>> {
         }
     }
 
+    public void close() throws Exception {
+        arquivo.close();
+    }
+
 }
