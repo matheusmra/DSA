@@ -58,6 +58,13 @@ public class Principal {
         }
     }
 
+    private static void reinicializarControllers() throws Exception {
+        encerrarRecursos();
+        USUARIO_CONTROLLER = new UsuarioController();
+        CURSO_CONTROLLER = new CursoController();
+        INSCRICAO_CONTROLLER = new InscricaoController();
+    }
+
     private static void menuInicial() throws Exception {
         String opcao;
         boolean executando = true;
@@ -102,7 +109,15 @@ public class Principal {
         }
 
         LOGIN_VIEW.mostrarMensagem("Login realizado com sucesso.");
-        return menuInicioAposLogin(email);
+        boolean resultado = menuInicioAposLogin(email);
+        
+        // Se o usuário fez logout (menuInicioAposLogin retorna false),
+        // reinicializa os controllers para evitar estados inconsistentes
+        if (!resultado) {
+            reinicializarControllers();
+        }
+        
+        return resultado;
     }
 
     private static boolean menuInicioAposLogin(String email) throws Exception {
