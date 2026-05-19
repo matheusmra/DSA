@@ -234,7 +234,7 @@ public class Arquivo<T extends Registro> {
                     arquivo.seek(endereco+3);
                     arquivo.writeLong(enderecoEspaco);
                     arquivo.seek(enderecoEspaco+3);
-                    arquivo.writeLong(+1);
+                    arquivo.writeLong(-1);
                     break;
                 }
                 anterior = endereco;
