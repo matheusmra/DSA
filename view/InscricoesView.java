@@ -82,8 +82,26 @@ public class InscricoesView {
         System.out.println("DESCRIÇÃO.....: " + curso.getDescricao());
         System.out.println("DATA DE INÍCIO: " + curso.getDataInicioCurso());
 
-        System.out.println();
-        System.out.println("(A) Fazer minha inscrição no curso");
+        String status;
+        switch (curso.getEstado()) {
+            case 1:
+                status = "Este curso está com inscrições encerradas.";
+                break;
+            case 2:
+                status = "Este curso foi concluído.";
+                break;
+            case 3:
+                status = "Este curso foi cancelado.";
+                break;
+            default:
+                status = "Este curso está aberto para inscrições.";
+                break;
+        }
+        System.out.println("\n" + status);
+
+        if (curso.getEstado() == 0) {
+            System.out.println("\n(A) Fazer minha inscrição no curso");
+        }
         System.out.println("\n(R) Retornar ao menu anterior");
         System.out.print("\nOpção: ");
 

@@ -64,7 +64,10 @@ public class CursoDetalheView {
 
         System.out.println("(A) Gerenciar inscritos no curso");
         System.out.println("(B) Corrigir dados do curso");
-        System.out.println("(C) Encerrar inscrições");
+        String opcaoEncerramento = getOpcaoEncerramento(curso);
+        if (!opcaoEncerramento.isEmpty()) {
+            System.out.println(opcaoEncerramento);
+        }
         System.out.println("(D) Concluir curso");
         System.out.println("(E) Cancelar curso");
 
@@ -78,7 +81,13 @@ public class CursoDetalheView {
         String opcao = console.nextLine().trim().toUpperCase();
 
         // valida opções
-        if (opcao.matches("[A-E]") || opcao.equals("R")) {
+        if (opcao.equals("R")) {
+            return opcao;
+        }
+        if (opcao.equals("C") && !opcaoEncerramento.isEmpty()) {
+            return opcao;
+        }
+        if (opcao.matches("[A-BD-E]")) {
             return opcao;
         }
 
@@ -103,6 +112,17 @@ public class CursoDetalheView {
                 return "Este curso foi cancelado.";
             default:
                 return "Status desconhecido.";
+        }
+    }
+
+    private String getOpcaoEncerramento(Curso curso) {
+        switch (curso.getEstado()) {
+            case 0:
+                return "(C) Encerrar inscrições";
+            case 1:
+                return "(C) Abrir inscrições";
+            default:
+                return "";
         }
     }
 }

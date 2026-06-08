@@ -204,10 +204,20 @@ public class Principal {
                         : "Falha ao atualizar curso.");
                     break;
                 case "C":
-                    if (CURSO_DETALHE_VIEW.confirmarAcao("Encerrar inscricoes")) {
-                        curso.setEstado(1);
-                        CURSO_CONTROLLER.atualizar(curso);
-                        CURSO_DETALHE_VIEW.mostrarMensagem("Inscricoes encerradas.");
+                    if (curso.getEstado() == 0) {
+                        if (CURSO_DETALHE_VIEW.confirmarAcao("Encerrar inscricoes")) {
+                            curso.setEstado(1);
+                            CURSO_CONTROLLER.atualizar(curso);
+                            CURSO_DETALHE_VIEW.mostrarMensagem("Inscricoes encerradas.");
+                        }
+                    } else if (curso.getEstado() == 1) {
+                        if (CURSO_DETALHE_VIEW.confirmarAcao("Abrir inscricoes")) {
+                            curso.setEstado(0);
+                            CURSO_CONTROLLER.atualizar(curso);
+                            CURSO_DETALHE_VIEW.mostrarMensagem("Inscricoes abertas.");
+                        }
+                    } else {
+                        CURSO_DETALHE_VIEW.mostrarMensagem("Ação não disponível para o estado atual do curso.");
                     }
                     break;
                 case "D":
@@ -389,11 +399,15 @@ public class Principal {
             String opcao = INSCRICOES_VIEW.mostrarDetalheCursoParaInscricao(curso, nomeAutor);
             switch (opcao) {
                 case "A":
-                    boolean inscrito = INSCRICAO_CONTROLLER.inscrever(usuario.getId(), curso.getId());
-                    INSCRICOES_VIEW.mostrarMensagem(inscrito
-                        ? "Inscrição realizada com sucesso!"
-                        : "Não foi possível realizar a inscrição.");
-                    if (inscrito) emDetalhe = false;
+                    if (curso.getEstado() == 0) {
+                        boolean inscrito = INSCRICAO_CONTROLLER.inscrever(usuario.getId(), curso.getId());
+                        INSCRICOES_VIEW.mostrarMensagem(inscrito
+                            ? "Inscrição realizada com sucesso!"
+                            : "Não foi possível realizar a inscrição.");
+                        if (inscrito) emDetalhe = false;
+                    } else {
+                        INSCRICOES_VIEW.mostrarMensagem("Este curso não está aceitando inscrições.");
+                    }
                     break;
                 case "R":
                     emDetalhe = false;
