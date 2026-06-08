@@ -1,10 +1,10 @@
 import controller.CursoController;
 import controller.UsuarioController;
-import model.Curso;
-import model.Usuario;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import model.Curso;
+import model.Usuario;
 
 public class CourseSeeder {
     public static void main(String[] args) {
