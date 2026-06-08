@@ -21,14 +21,14 @@ public class ArquivoCurso extends Arquivo<Curso> {
         indiceUsuarioCurso = new ArvoreBMais<>(
             ParIntInt.class.getConstructor(),
             5,
-            ".\\dados\\cursos\\indiceUsuarioCurso.db"
+            "./dados/cursos/indiceUsuarioCurso.db"
         );
 
         indiceCodigo = new HashExtensivel<>(
             ParCodigoID.class.getConstructor(),
             4,
-            ".\\dados\\cursos\\indiceCodigo.d.db",
-            ".\\dados\\cursos\\indiceCodigo.c.db"
+            "./dados/cursos/indiceCodigo.d.db",
+            "./dados/cursos/indiceCodigo.c.db"
         );
     }
 
@@ -102,14 +102,23 @@ public class ArquivoCurso extends Arquivo<Curso> {
     public List<Curso> listarTodos() throws Exception {
         List<Curso> listaFinal = super.readAll();
         listaFinal.sort((a, b) -> {
-            // Converte data no formato DD/MM/YYYY para YYYYMMDD para comparação numérica
-            String[] partsA = a.getDataInicioCurso().split("/");
-            String[] partsB = b.getDataInicioCurso().split("/");
-            
-            String dataA = partsA[2] + partsA[1] + partsA[0]; // YYYYMMDD
-            String dataB = partsB[2] + partsB[1] + partsB[0]; // YYYYMMDD
-            
-            return dataA.compareTo(dataB);
+            try {
+                // Converte data no formato DD/MM/YYYY para YYYYMMDD para comparação numérica
+                String[] partsA = a.getDataInicioCurso().split("/");
+                String[] partsB = b.getDataInicioCurso().split("/");
+                
+                if (partsA.length != 3 || partsB.length != 3) {
+                    return 0; // Se formato inválido, mantém ordem original
+                }
+                
+                String dataA = partsA[2] + partsA[1] + partsA[0]; // YYYYMMDD
+                String dataB = partsB[2] + partsB[1] + partsB[0]; // YYYYMMDD
+                
+                return dataA.compareTo(dataB);
+            } catch (Exception e) {
+                System.err.println("Erro ao comparar datas: " + e.getMessage());
+                return 0; // Mantém ordem original em caso de erro
+            }
         });
         return listaFinal;
     }

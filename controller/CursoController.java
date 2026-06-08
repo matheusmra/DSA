@@ -23,8 +23,8 @@ public class CursoController {
         arqInscricoes = new ArquivoCursoUsuario();
         listaInvertida = new ListaInvertida(
             4,
-            ".\\dados\\cursos\\indiceInvertido.d.db",
-            ".\\dados\\cursos\\indiceInvertido.b.db"
+            "./dados/cursos/indiceInvertido.d.db",
+            "./dados/cursos/indiceInvertido.b.db"
         );
         busca = new Busca(listaInvertida);
     }
@@ -208,8 +208,9 @@ public class CursoController {
         try {
             return repository.listarTodos();
         } catch (Exception e) {
-            System.out.println("Erro ao listar todos os cursos");
-            return null;
+            System.err.println("Erro ao listar todos os cursos: " + e.getMessage());
+            e.printStackTrace();
+            return new java.util.ArrayList<>();
         }
     }
 

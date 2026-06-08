@@ -19,13 +19,13 @@ public class ArquivoCursoUsuario extends Arquivo<CursoUsuario> {
         indiceCursoUsuario = new ArvoreBMais<>(
             ParIntInt.class.getConstructor(), 
             5, 
-            ".\\dados\\inscricoes\\indiceCursoUsuario.btree"
+            "./dados/inscricoes/indiceCursoUsuario.btree"
         );
         
         indiceUsuarioCurso = new ArvoreBMais<>(
             ParIntInt.class.getConstructor(), 
             5, 
-            ".\\dados\\inscricoes\\indiceUsuarioCurso.btree"
+            "./dados/inscricoes/indiceUsuarioCurso.btree"
         );
     }
 
