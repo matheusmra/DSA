@@ -1,6 +1,0 @@
-num = int(input())
-hours = int(input())
-min_wage = float(input())
-salary = float(hours * min_wage)
-print(f"NUMBER = {num}")
-print(f"SALARY = U$ {salary:.2f}")

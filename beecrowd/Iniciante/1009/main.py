@@ -1,5 +1,0 @@
-nome = str(input())
-salary = float(input())
-t_sell = float(input())
-total = salary + (t_sell * 0.15)
-print(f"TOTAL = R$ {total:.2f}")
